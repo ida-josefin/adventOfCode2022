@@ -36,8 +36,7 @@ async function example() {
     //sort which elf has the highest amount of calories
     sortedCaloriesArray.sort((a,b)=>a-b);
 
-    console.log(sortedCaloriesArray[sortedCaloriesArray.length - 1]);
-    console.log(sortedCaloriesArray[sortedCaloriesArray.length - 2]);
-    console.log(sortedCaloriesArray[sortedCaloriesArray.length - 3]);
+    console.log('The answer for part one is: ' + sortedCaloriesArray[sortedCaloriesArray.length - 1]);
+    console.log('The answer for part two is: ' + (sortedCaloriesArray[sortedCaloriesArray.length - 1] + sortedCaloriesArray[sortedCaloriesArray.length - 2] + sortedCaloriesArray[sortedCaloriesArray.length - 3]));
     }
 )();
