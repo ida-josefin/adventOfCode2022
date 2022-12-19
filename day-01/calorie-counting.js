@@ -23,8 +23,8 @@ async function example() {
         sortedCaloriesArray.push(sum);
     }
 
+    //put each elf's calories into one row and make the calories from strings to numbers
     for (let i in caloriesArray) {
-        //put one elf's calories into one row and make the calories strings into numbers
         caloriesArray[i] = caloriesArray[i]
         .split('\n')
         .map(x => Number(x));
