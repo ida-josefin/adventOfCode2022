@@ -31,7 +31,7 @@ async function example() {
         //set second element in the array to the chosen weapon
         let chosenWeapon = strategyOneArray[i][1];
 
-        //set score for draw and wins
+        //set score for draws and wins
         const drawScore = 3;
         const winningScore = 6;
 
@@ -71,7 +71,6 @@ async function example() {
         } else {
             console.log('Something went wrong');
         }
-
         weaponScore(chosenWeapon);
     }
 
