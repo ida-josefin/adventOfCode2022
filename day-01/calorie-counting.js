@@ -1,42 +1,51 @@
 const fs = require('fs/promises');
 
-async function example() {
-    const data = await fs.readFile('data.txt', { encoding: 'utf8' });
-    return data;
+async function readCaloriesData() {
+    const caloriesData = await fs.readFile('data.txt', { encoding: 'utf8' });
+    return caloriesData;
 }
 
 (async ()=>{
-    const calories = await example();
+    const caloriesData = await readCaloriesData();
+    const caloriesPerElfArray = [];
 
-    //split elves into different strings
-    const caloriesArray = calories.split('\n\n');
-
-     //create an array that will store the sum of each elf's calories beginning from the one with the least amount
-    const sortedCaloriesArray = [];
-
-    //count the sum of one elf's calories
-    const sumArray = (array) => {
-        let sum = 0;
-        for (let i in array) {
-            sum += array[i];
+    const calculateCaloriesPerElf = (array) => {
+        let elfCalories = 0;
+        for (let calorieAmount in array) {
+            elfCalories += array[calorieAmount];
         }
-        sortedCaloriesArray.push(sum);
+        caloriesPerElfArray.push(elfCalories);
+        return caloriesPerElfArray;
     }
 
-    //put each elf's calories into one row and make the calories from strings to numbers
-    for (let i in caloriesArray) {
-        caloriesArray[i] = caloriesArray[i]
-        .split('\n')
-        .map(x => Number(x));
-
-        //count the sum of one elfs calories
-        sumArray(caloriesArray[i]);
+    const fromStringToNumber = (strings) => {
+        for (let i in strings) {
+            strings[i] = strings[i]
+            .split('\n')
+            .map(x => Number(x));
+        }
     }
 
-    //sort which elf has the highest amount of calories
-    sortedCaloriesArray.sort((a,b)=>a-b);
+    const calculateTotalCaloriesPerElf = (caloriesPerElf) => {
+        for (let i in caloriesPerElf) {
+            calculateCaloriesPerElf(caloriesPerElf[i]);
+        }
+    }
 
-    console.log('The answer for part one is: ' + sortedCaloriesArray[sortedCaloriesArray.length - 1]);
-    console.log('The answer for part two is: ' + (sortedCaloriesArray[sortedCaloriesArray.length - 1] + sortedCaloriesArray[sortedCaloriesArray.length - 2] + sortedCaloriesArray[sortedCaloriesArray.length - 3]));
+    const sortCaloriesPerElfDescending = () => {
+        caloriesPerElfArray.sort((a,b)=>a-b);
+    }
+
+    const initialize = () => {
+        const caloriesGroupedPerElf = caloriesData.split('\n\n');
+        fromStringToNumber(caloriesGroupedPerElf);
+        calculateTotalCaloriesPerElf(caloriesGroupedPerElf);
+        sortCaloriesPerElfDescending();
+        
+    }
+    initialize();
+
+    const elfWithMostCalories = caloriesPerElfArray[caloriesPerElfArray.length - 1];
+    const threeElfsWithTheMostCalories = caloriesPerElfArray[caloriesPerElfArray.length - 1] + caloriesPerElfArray[caloriesPerElfArray.length - 2] + caloriesPerElfArray[caloriesPerElfArray.length - 3];
     }
 )();
