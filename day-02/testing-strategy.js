@@ -1,80 +1,91 @@
 const fs = require('fs/promises');
 
-async function example() {
-    const data = await fs.readFile('data.txt', { encoding: 'utf8' });
-    return data;
+async function readStrategyData() {
+    const strategyData = await fs.readFile('data.txt', { encoding: 'utf8' });
+    return strategyData;
 }
 
 (async ()=>{
-    const guide = await example();
+    const guide = await readStrategyData();
+    let strategyArray;
 
-    //split data rows into arrays and replace letters with their meaning
-    let strategyOneArray = guide.split('\n')
-    .map(letter => letter.replace('A', 'rock')
-    .replace('B', 'paper')
-    .replace('C', 'scissors')
-    .replace('X', 'rock')
-    .replace('Y', 'paper')
-    .replace('Z', 'scissors'));
+    const replaceLettersWithWeapon = () => {
+        strategyArray = guide.split('\n')
+        .map(letter => letter.replace('A', 'rock')
+        .replace('B', 'paper')
+        .replace('C', 'scissors')
+        .replace('X', 'rock')
+        .replace('Y', 'paper')
+        .replace('Z', 'scissors'));
+    }
+    replaceLettersWithWeapon();
 
-    //counter for the score
     let scorePartOne = 0;
     let scorePartTwo = 0;
 
-    for (let i in strategyOneArray) {
-        //delete spacing
-        strategyOneArray[i] = strategyOneArray[i].split(' ');
+    for (let i in strategyArray) {
+        strategyArray[i] = strategyArray[i].split(' ');
 
-        //set first element in the array to the competitor weapon
-        let competitorWeapon = strategyOneArray[i][0];
+        let competitorWeapon = strategyArray[i][0];
+        let chosenWeapon = strategyArray[i][1];
 
-        //set second element in the array to the chosen weapon
-        let chosenWeapon = strategyOneArray[i][1];
+        //For part two
+        let chosenStrategy = strategyArray[i][1];
 
-        //set score for draws and wins
         const drawScore = 3;
         const winningScore = 6;
 
-        //
-        const weaponScore = (weapon) => {
-            const chosenWeaponScore = chosenWeapon === 'rock' ? scorePartOne = scorePartOne + 1
-                : chosenWeapon === 'paper' ? scorePartOne = scorePartOne + 2
-                : chosenWeapon === 'scissors' ? scorePartOne = scorePartOne + 3
-                : console.log('Error');
-        }
+        const weaponScore = {
+            rock: 1,
+            paper: 2,
+            scissors: 3
+        };
 
-        if (competitorWeapon === chosenWeapon) {
+        const addWeaponScore = (weapon) => {
+            if(weapon === 'rock') {
+                scorePartOne += weaponScore.rock;
+            } else if (weapon === 'paper'){
+                scorePartOne += weaponScore.paper;
+            } else if (weapon === 'scissors') {
+                scorePartOne += weaponScore.scissors;
+            }
+        }
+        addWeaponScore(chosenWeapon);
+        
+        const winsOver = {
+            paper: 'rock',
+            scissors: 'paper',
+            rock: 'scissors'
+        };
+
+        if(winsOver[chosenWeapon] === competitorWeapon) {
+            scorePartOne += winningScore;
+        } else if (competitorWeapon === chosenWeapon) {
             scorePartOne = scorePartOne + drawScore;
-        } 
-
-        if (competitorWeapon === 'rock' && chosenWeapon === 'paper') { 
-            scorePartOne = scorePartOne + winningScore;
-            scorePartTwo = scorePartTwo + drawScore + 1;
-        } else if (competitorWeapon === 'paper' && chosenWeapon === 'scissors' ) {
-            scorePartOne = scorePartOne + winningScore;
-            scorePartTwo = scorePartTwo + winningScore + 3;
-        } else if (competitorWeapon === 'scissors' && chosenWeapon === 'rock') {
-            scorePartOne = scorePartOne + winningScore;
-            scorePartTwo = scorePartTwo + 2;
-        } else if (competitorWeapon === 'rock' && chosenWeapon === 'scissors') {
-            scorePartTwo = scorePartTwo + winningScore + 2;
-        } else if (competitorWeapon === 'rock' && chosenWeapon === 'rock') {
-            scorePartTwo = scorePartTwo + 3;
-        } else if (competitorWeapon === 'paper' && chosenWeapon === 'rock') {
-            scorePartTwo = scorePartTwo + 1;
-        } else if (competitorWeapon === 'scissors' && chosenWeapon === 'paper') {
-            scorePartTwo = scorePartTwo + drawScore + 3;
-        } else if (competitorWeapon === 'paper' && chosenWeapon === 'paper') {
-            scorePartTwo = scorePartTwo + drawScore + 2;
-        } else if (competitorWeapon === 'scissors' && chosenWeapon === 'scissors') {
-            scorePartTwo = scorePartTwo + winningScore + 1;
-        } else {
-            console.log('Something went wrong');
         }
-        weaponScore(chosenWeapon);
-    }
 
-    console.log('The answer is for part one is: ' + scorePartOne);
-    console.log('The answer is for part one is: ' + scorePartTwo);
+        const strategy = {
+            rock: 'lose',
+            paper: 'draw',
+            scissors: 'win'
+        };
+
+        const loseOver = {
+            paper: 'scissors',
+            scissors: 'rock',
+            rock: 'paper'
+        };
+        
+        if(strategy[chosenStrategy] === 'draw') {
+            chosenStrategy = competitorWeapon;
+            scorePartTwo += drawScore;
+        } else if (strategy[chosenStrategy] === 'win') {
+            chosenStrategy = loseOver[competitorWeapon];
+            scorePartTwo += winningScore;
+        } else if (strategy[chosenStrategy] === 'lose') {
+            chosenStrategy = winsOver[competitorWeapon];
+        }
+        scorePartTwo += weaponScore[chosenStrategy]
+    }
 }
 )();
